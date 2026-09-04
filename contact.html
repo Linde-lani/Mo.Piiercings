@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us - Mo's Piercings</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <header>
+        <h1>Mo's Piercings</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products & Services</a></li>
+                <li><a href="bookings.html">Bookings</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Contact Us</h2>
+        <p>Have questions? Get in touch with us! We're here to help.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; max-width: 1000px; margin: 2em auto; padding: 0 2em;">
+            <div class="contact-container" style="box-shadow: none; padding: 0;">
+                <h3>Get in Touch</h3>
+                <form method="POST" action="save_contact.php">
+                    <div class="form-group">
+                        <label for="fname">Full Name</label>
+                        <input type="text" id="fname" name="fname" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="femail">Email Address</label>
+                        <input type="email" id="femail" name="femail" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fphone">Phone Number</label>
+                        <input type="tel" id="fphone" name="fphone">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+
+            <div style="padding: 2em; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                <h3>Contact Information</h3>
+                <div style="margin: 1.5em 0;">
+                    <h4 style="color: #D4AF37; margin-bottom: 0.5em;"> Phone</h4>
+                    <p style="margin: 0;"><strong>+27 (645) 038-694</strong></p>
+                    <p style="margin: 0; color: #666; font-size: 0.95em;">Available Mon-Sun during business hours</p>
+                </div>
+
+                <div style="margin: 1.5em 0;">
+                    <h4 style="color: #D4AF37; margin-bottom: 0.5em;"> Email</h4>
+                    <p style="margin: 0;"><strong>hello@mopiiercings.co.za</strong></p>
+                    <p style="margin: 0; color: #666; font-size: 0.95em;">WhatsApp available for quick inquiries</p>
+                </div>
+
+                <div style="margin: 1.5em 0;">
+                    <h4 style="color: #D4AF37; margin-bottom: 0.5em;"> Location</h4>
+                    <p style="margin: 0;"><strong>Cnr De Beer & 155 Smit St</strong></p>
+                    <p style="margin: 0; color: #666;">Braamfontein, Johannesburg, 2001</p>
+                    <p style="margin: 0; color: #666;">South Africa</p>
+                </div>
+
+                <div style="margin: 1.5em 0;">
+                    <h4 style="color: #D4AF37; margin-bottom: 0.5em;"> Hours</h4>
+                    <p style="margin: 0; color: #666;">Mon: 9:00 AM - 6:00 PM</p>
+                    <p style="margin: 0; color: #666;">Tue: 9:30 AM - 6:00 PM</p>
+                    <p style="margin: 0; color: #666;">Wed-Thu: 9:00 AM - 5:00 PM</p>
+                    <p style="margin: 0; color: #666;">Fri: 10:00 AM - 3:00 PM</p>
+                    <p style="margin: 0; color: #666;">Sat: 10:00 AM - 5:00 PM</p>
+                    <p style="margin: 0; color: #666;">Sun: 10:00 AM - 3:00 PM</p>
+                </div>
+
+                <div style="margin: 2em 0 0 0;">
+                    <h4 style="color: #D4AF37; margin-bottom: 0.5em;">Follow Us</h4>
+                    <div style="display: flex; gap: 1em;">
+                        <a href="https://www.instagram.com/mopiiercingsandco" target="_blank" style="color: #2d5f3f; text-decoration: none; font-weight: bold;">Instagram</a>
+                        <a href="https://www.tiktok.com/@mopiiercings" target="_blank" style="color: #2d5f3f; text-decoration: none; font-weight: bold;">TikTok</a>
+                        <a href="https://wa.me/27645038694" target="_blank" style="color: #2d5f3f; text-decoration: none; font-weight: bold;">WhatsApp</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="text-align: center; margin-top: 3em;">FAQ</h3>
+        <div style="max-width: 800px; margin: 2em auto; padding: 0 2em;">
+            <div style="margin: 1.5em 0; padding: 1.5em; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                <h4 style="color: #667eea; margin-top: 0;">How do I book an appointment?</h4>
+                <p>Visit our <a href="bookings.html" style="color: #667eea;">Bookings page</a> to select your service, date, and time. You can also call us directly.</p>
+            </div>
+
+            <div style="margin: 1.5em 0; padding: 1.5em; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                <h4 style="color: #667eea; margin-top: 0;">Do you offer gift certificates?</h4>
+                <p>Yes! Gift certificates are available in any amount. Contact us for details.</p>
+            </div>
+
+            <div style="margin: 1.5em 0; padding: 1.5em; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                <h4 style="color: #667eea; margin-top: 0;">What aftercare should I follow?</h4>
+                <p>We provide detailed aftercare instructions for all piercings and tattoos. Proper care is essential for healing and preventing infection.</p>
+            </div>
+
+            <div style="margin: 1.5em 0; padding: 1.5em; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                <h4 style="color: #667eea; margin-top: 0;">Are you using sterile equipment?</h4>
+                <p>Absolutely! We use only sterile, single-use needles and follow all health and safety regulations.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mo Piiercings & Co. All rights reserved.</p>
+        <p>Phone: +27 (645) 038-694 | Braamfontein, Johannesburg</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book an Appointment - Mo's Piercings</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <header>
+        <h1>Mo's Piercings</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products & Services</a></li>
+                <li><a href="bookings.html">Bookings</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Book Your Appointment</h2>
+        <p>Select your service, date, and time to book with us. We look forward to seeing you!</p>
+
+        <div class="booking-container">
+            <form method="POST" action="save_booking.php" id="booking-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="service">Select Service</label>
+                    <select id="service" name="service" style="width: 100%; padding: 0.8em; border: 1px solid #ddd; border-radius: 8px; font-size: 1em;" required>
+                        <option value="">-- Choose a Service --</option>
+                        <optgroup label="Piercing">
+                            <option value="Ear Piercing">Ear Piercing - R300 - R550</option>
+                            <option value="Nose Piercing">Nose Piercing - R450 - R700</option>
+                            <option value="Lip Piercing">Lip Piercing - R500 - R750</option>
+                            <option value="Eyebrow Piercing">Eyebrow Piercing - R450 - R700</option>
+                            <option value="Belly Button Piercing">Belly Button Piercing - R550 - R800</option>
+                            <option value="Industrial Piercing">Industrial Piercing - R650 - R950</option>
+                        </optgroup>
+                        <optgroup label="Tattoo">
+                            <option value="Small Tattoo">Small Tattoo - R800 - R1,500</option>
+                            <option value="Medium Tattoo">Medium Tattoo - R1,500 - R4,500</option>
+                            <option value="Large Tattoo">Large Tattoo - R4,500+</option>
+                            <option value="Color Tattoo">Color Tattoo - R1,200+</option>
+                            <option value="Black & Gray">Black & Gray - R800+</option>
+                            <option value="Custom Design">Custom Design - Quote</option>
+                            <option value="Tattoo Consultation">Tattoo Consultation - Free</option>
+                        </optgroup>
+                        <optgroup label="Jewelry & Tooth Gem">
+                            <option value="Stainless Steel">Stainless Steel - R80 - R250</option>
+                            <option value="Titanium Jewelry">Titanium Jewelry - R180 - R450</option>
+                            <option value="Gold Plated">Gold Plated - R250 - R700</option>
+                            <option value="Sterling Silver">Sterling Silver - R300 - R900</option>
+                            <option value="Crystal & Gems">Crystal & Gems - R350 - R1,200</option>
+                            <option value="Custom Pieces">Custom Pieces - Quote</option>
+                            <option value="Single Tooth Gem">Single Tooth Gem - R250 - R500</option>
+                            <option value="Multiple Gems">Multiple Gems - R600 - R1,800</option>
+                            <option value="Premium Crystals">Premium Crystals - R500 - R950</option>
+                            <option value="Jewelry Consultation">Jewelry Consultation - Free</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Preferred Date</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Preferred Time</label>
+                    <div class="timeslot-grid">
+                        <div class="timeslot" onclick="selectTime(this, '10:00 AM')">10:00 AM</div>
+                        <div class="timeslot" onclick="selectTime(this, '11:00 AM')">11:00 AM</div>
+                        <div class="timeslot" onclick="selectTime(this, '12:00 PM')">12:00 PM</div>
+                        <div class="timeslot" onclick="selectTime(this, '1:00 PM')">1:00 PM</div>
+                        <div class="timeslot" onclick="selectTime(this, '2:00 PM')">2:00 PM</div>
+                        <div class="timeslot" onclick="selectTime(this, '3:00 PM')">3:00 PM</div>
+                        <div class="timeslot" onclick="selectTime(this, '4:00 PM')">4:00 PM</div>
+                        <div class="timeslot" onclick="selectTime(this, '5:00 PM')">5:00 PM</div>
+                    </div>
+                    <input type="hidden" id="time" name="time" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Additional Notes</label>
+                    <textarea id="notes" name="notes" placeholder="Any special requests or questions?"></textarea>
+                </div>
+
+                <input type="hidden" id="cart_items" name="cart_items" value="[]" />
+
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; font-weight: normal;">
+                        <input type="checkbox" name="agree" required style="margin-right: 0.5em;">
+                        I agree to the piercing/tattoo aftercare instructions
+                    </label>
+                </div>
+
+                <button type="submit">Confirm Booking</button>
+            </form>
+        </div>
+
+        <div class="booking-container" style="margin-top: 1.5em;">
+            <div class="cart-summary" style="max-width: 600px; margin: 0 auto;">
+                <h3>Selected Items</h3>
+                <ul id="booking-cart-items" class="booking-cart-list"></ul>
+                <div class="summary-row total-row">
+                    <span>Total</span>
+                    <span id="booking-cart-total">R0</span>
+                </div>
+            </div>
+        </div>
+
+        <h3>Our Hours</h3>
+        <div style="max-width: 600px; margin: 2em auto; padding: 2em; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+            <p><strong>Monday - Friday:</strong> 10:00 AM - 8:00 PM</p>
+            <p><strong>Saturday:</strong> 10:00 AM - 6:00 PM</p>
+            <p><strong>Sunday:</strong> 12:00 PM - 5:00 PM</p>
+            <p style="margin-top: 1em; color: #666;"><strong>Phone:</strong> (555) 123-4567</p>
+            <p style="color: #666;"><strong>Email:</strong> bookings@mopiercings.com</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mo's Piercings. All rights reserved.</p>
+        <p>Phone: (555) 123-4567 | Email: info@mopiercings.com</p>
+    </footer>
+
+    <script>
+        function selectTime(element, time) {
+            // Remove 'selected' class from all timeslots
+            document.querySelectorAll('.timeslot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            // Add 'selected' class to clicked timeslot
+            element.classList.add('selected');
+            // Set the hidden input value
+            document.getElementById('time').value = time;
+        }
+
+        function handleBooking(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const service = document.getElementById('service').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+
+            if (!time) {
+                alert('Please select a time slot');
+                return;
+            }
+
+            document.getElementById('cart_items').value = localStorage.getItem('mopiiercings_cart') || '[]';
+            alert(`Thank you, ${name}! Your booking has been submitted.\n\nService: ${service}\nDate: ${date}\nTime: ${time}\n\nWe'll confirm your appointment via email at ${email}`);
+            event.target.submit();
+        }
+
+        function populateBookingSummary() {
+            const cart = JSON.parse(localStorage.getItem('mopiiercings_cart') || '[]');
+            const list = document.getElementById('booking-cart-items');
+            const total = document.getElementById('booking-cart-total');
+            const service = document.getElementById('service');
+
+            if (!list || !total) return;
+
+            if (!cart.length) {
+                list.innerHTML = '<li class="booking-empty">No items selected yet.</li>';
+                total.textContent = 'R0';
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
+            list.innerHTML = cart.map((item) => `
+                <li>
+                    <span>${item.name} x ${item.quantity}</span>
+                    <strong>R${((Number(item.price) || 0) * (Number(item.quantity) || 1)).toLocaleString('en-ZA')}</strong>
+                </li>
+            `).join('');
+            total.textContent = new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', maximumFractionDigits: 0 }).format(subtotal);
+            document.getElementById('cart_items').value = JSON.stringify(cart);
+
+            if (service) {
+                const firstItem = cart[0]?.name;
+                if (firstItem) {
+                    const match = Array.from(service.options).find((option) => option.textContent.toLowerCase().includes(firstItem.toLowerCase()));
+                    if (match) service.value = match.value;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            populateBookingSummary();
+            const bookingForm = document.getElementById('booking-form');
+            if (bookingForm) {
+                bookingForm.addEventListener('submit', function (event) {
+                    document.getElementById('cart_items').value = localStorage.getItem('mopiiercings_cart') || '[]';
+                    if (!document.getElementById('time').value) {
+                        event.preventDefault();
+                        alert('Please select a time slot');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

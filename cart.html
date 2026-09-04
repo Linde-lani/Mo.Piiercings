@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Cart - Mo's Piercings</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <header>
+        <h1>Mo's Piercings</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products & Services</a></li>
+                <li><a href="bookings.html">Bookings</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Your Shopping Cart</h2>
+
+        <div class="cart-page">
+            <div id="cart-items" class="cart-items-list"></div>
+
+            <aside class="cart-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-row">
+                    <span>Items</span>
+                    <span class="cart-item-count">0 items</span>
+                </div>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal" class="cart-subtotal">R0</span>
+                </div>
+                <div class="summary-row total-row">
+                    <span>Total</span>
+                    <span id="cart-total" class="cart-total">R0</span>
+                </div>
+                <a href="bookings.html" class="btn checkout-btn">Pay / Book Now</a>
+                <a href="products.html" class="btn secondary">Continue Shopping</a>
+            </aside>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mo's Piercings. All rights reserved.</p>
+        <p>Phone: (555) 123-4567 | Email: info@mopiercings.com</p>
+    </footer>
+
+    <script src="js/cart.js"></script>
+</body>
+</html>
