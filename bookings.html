@@ -8,17 +8,24 @@
 </head>
 <body>
     <header>
-        <h1>Mo's Piercings</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="products.html">Products & Services</a></li>
-                <li><a href="bookings.html">Bookings</a></li>
-                <li><a href="contact.html">Contact Us</a></li>
-                <li><a href="about.html">About Us</a></li>
-                <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
-            </ul>
-        </nav>
+        <div class="header-brand-wrap">
+            <img src="pictures/logo.webp" alt="Mo Piiercings logo" class="site-logo" width="44" height="44">
+            <h1>Mo Piiercings & Co</h1>
+        </div>
+        <div class="header-actions">
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="products.html">Products & Services</a></li>
+                    <li><a href="bookings.html">Bookings</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
+                </ul>
+            </nav>
+            <button type="button" class="logout-button" id="logout-link">LogOut</button>
+        </div>
     </header>
 
     <main>
@@ -26,15 +33,15 @@
         <p>Select your service, date, and time to book with us. We look forward to seeing you!</p>
 
         <div class="booking-container">
-            <form method="POST" action="save_booking.php" id="booking-form">
+            <form id="booking-form" method="post">
                 <div class="form-group">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" name="name" required>
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" readonly required>
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" readonly required>
                 </div>
 
                 <div class="form-group">
@@ -86,16 +93,17 @@
                 <div class="form-group">
                     <label>Preferred Time</label>
                     <div class="timeslot-grid">
-                        <div class="timeslot" onclick="selectTime(this, '10:00 AM')">10:00 AM</div>
-                        <div class="timeslot" onclick="selectTime(this, '11:00 AM')">11:00 AM</div>
-                        <div class="timeslot" onclick="selectTime(this, '12:00 PM')">12:00 PM</div>
-                        <div class="timeslot" onclick="selectTime(this, '1:00 PM')">1:00 PM</div>
-                        <div class="timeslot" onclick="selectTime(this, '2:00 PM')">2:00 PM</div>
-                        <div class="timeslot" onclick="selectTime(this, '3:00 PM')">3:00 PM</div>
-                        <div class="timeslot" onclick="selectTime(this, '4:00 PM')">4:00 PM</div>
-                        <div class="timeslot" onclick="selectTime(this, '5:00 PM')">5:00 PM</div>
+                        <button class="timeslot" type="button" data-time="10:00 AM">10:00 AM</button>
+                        <button class="timeslot" type="button" data-time="11:00 AM">11:00 AM</button>
+                        <button class="timeslot" type="button" data-time="12:00 PM">12:00 PM</button>
+                        <button class="timeslot" type="button" data-time="1:00 PM">1:00 PM</button>
+                        <button class="timeslot" type="button" data-time="2:00 PM">2:00 PM</button>
+                        <button class="timeslot" type="button" data-time="3:00 PM">3:00 PM</button>
+                        <button class="timeslot" type="button" data-time="4:00 PM">4:00 PM</button>
+                        <button class="timeslot" type="button" data-time="5:00 PM">5:00 PM</button>
                     </div>
                     <input type="hidden" id="time" name="time" required>
+                    <p id="availability-message" aria-live="polite">Choose a date to see available times.</p>
                 </div>
 
                 <div class="form-group">
@@ -112,6 +120,7 @@
                     </label>
                 </div>
 
+                <p id="booking-message" aria-live="polite"></p>
                 <button type="submit">Confirm Booking</button>
             </form>
         </div>
@@ -143,38 +152,14 @@
     </footer>
 
     <script>
-        function selectTime(element, time) {
-            // Remove 'selected' class from all timeslots
-            document.querySelectorAll('.timeslot').forEach(slot => {
-                slot.classList.remove('selected');
-            });
-            // Add 'selected' class to clicked timeslot
-            element.classList.add('selected');
-            // Set the hidden input value
-            document.getElementById('time').value = time;
-        }
-
-        function handleBooking(event) {
-            event.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const service = document.getElementById('service').value;
-            const date = document.getElementById('date').value;
-            const time = document.getElementById('time').value;
-
-            if (!time) {
-                alert('Please select a time slot');
-                return;
-            }
-
-            document.getElementById('cart_items').value = localStorage.getItem('mopiiercings_cart') || '[]';
-            alert(`Thank you, ${name}! Your booking has been submitted.\n\nService: ${service}\nDate: ${date}\nTime: ${time}\n\nWe'll confirm your appointment via email at ${email}`);
-            event.target.submit();
-        }
-
         function populateBookingSummary() {
-            const cart = JSON.parse(localStorage.getItem('mopiiercings_cart') || '[]');
+            let cart = [];
+            try {
+                const savedCart = JSON.parse(localStorage.getItem('mopiiercings_cart') || '[]');
+                cart = Array.isArray(savedCart) ? savedCart : [];
+            } catch (error) {
+                console.error('Could not load saved cart items.', error);
+            }
             const list = document.getElementById('booking-cart-items');
             const total = document.getElementById('booking-cart-total');
             const service = document.getElementById('service');
@@ -197,28 +182,33 @@
             total.textContent = new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', maximumFractionDigits: 0 }).format(subtotal);
             document.getElementById('cart_items').value = JSON.stringify(cart);
 
-            if (service) {
-                const firstItem = cart[0]?.name;
-                if (firstItem) {
-                    const match = Array.from(service.options).find((option) => option.textContent.toLowerCase().includes(firstItem.toLowerCase()));
-                    if (match) service.value = match.value;
-                }
-            }
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            populateBookingSummary();
-            const bookingForm = document.getElementById('booking-form');
-            if (bookingForm) {
-                bookingForm.addEventListener('submit', function (event) {
-                    document.getElementById('cart_items').value = localStorage.getItem('mopiiercings_cart') || '[]';
-                    if (!document.getElementById('time').value) {
-                        event.preventDefault();
-                        alert('Please select a time slot');
+            const serviceSelect = document.getElementById('service');
+            const requestedService = new URLSearchParams(window.location.search).get('service');
+            if (requestedService) {
+                try {
+                    const cart = JSON.parse(localStorage.getItem('mopiiercings_cart') || '[]');
+                    if (Array.isArray(cart)) {
+                        const cleanedCart = cart.filter((item) =>
+                            item.id !== requestedService || item.image
+                        );
+                        if (cleanedCart.length !== cart.length) {
+                            localStorage.setItem('mopiiercings_cart', JSON.stringify(cleanedCart));
+                        }
                     }
-                });
+                } catch (error) {
+                    console.error('Could not clean up an item left by the previous booking flow.', error);
+                }
+            }
+
+            populateBookingSummary();
+            if (requestedService && Array.from(serviceSelect.options).some(option => option.value === requestedService)) {
+                serviceSelect.value = requestedService;
             }
         });
     </script>
+    <script type="module" src="js/auth.js"></script>
 </body>
 </html>

@@ -8,125 +8,172 @@
 </head>
 <body>
     <header>
-        <h1>Mo's Piercings</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="products.html">Products & Services</a></li>
-                <li><a href="bookings.html">Bookings</a></li>
-                <li><a href="contact.html">Contact Us</a></li>
-                <li><a href="about.html">About Us</a></li>
-                <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
-            </ul>
-        </nav>
+        <div class="header-brand-wrap">
+            <img src="pictures/logo.webp" alt="Mo Piiercings logo" class="site-logo" width="44" height="44">
+            <h1>Mo Piiercings & Co</h1>
+        </div>
+        <div class="header-actions">
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="products.html">Products & Services</a></li>
+                    <li><a href="bookings.html">Bookings</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
+                </ul>
+            </nav>
+            <button type="button" class="logout-button" id="logout-link">LogOut</button>
+        </div>
     </header>
 
-    <main>
-        <h2>Contact Us</h2>
-        <p>Have questions? Get in touch with us! We're here to help.</p>
+    <main class="contact-page">
+        <div class="contact-panel contact-top-card">
+            <div class="panel-header">
+                <span class="panel-kicker">Contact Information</span>
+                <h3>We're here to help</h3>
+            </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; max-width: 1000px; margin: 2em auto; padding: 0 2em;">
-            <div class="contact-container" style="box-shadow: none; padding: 0;">
-                <h3>Get in Touch</h3>
-                <form method="POST" action="save_contact.php">
+            <table class="contact-details-table">
+                <tbody>
+                    <tr>
+                        <th scope="row">Phone</th>
+                        <td>
+                            <strong>+27 (645) 038-694</strong><br>
+                            <span>Available Mon-Sun during business hours</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Email</th>
+                        <td>
+                            <strong>hello@mopiiercings.co.za</strong><br>
+                            <span>WhatsApp available for quick inquiries</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Location</th>
+                        <td>
+                            <strong>Cnr De Beer & 155 Smit St</strong><br>
+                            <span>Braamfontein, Johannesburg, 2001<br>South Africa</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Hours</th>
+                        <td>
+                            <span>Mon: 9:00 AM - 6:00 PM</span><br>
+                            <span>Tue: 9:30 AM - 6:00 PM</span><br>
+                            <span>Wed-Thu: 9:00 AM - 5:00 PM</span><br>
+                            <span>Fri: 10:00 AM - 3:00 PM</span><br>
+                            <span>Sat: 10:00 AM - 5:00 PM</span><br>
+                            <span>Sun: 10:00 AM - 3:00 PM</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="social-block">
+                <span class="info-label">Follow Us</span>
+                <div class="social-list">
+                    <a href="https://www.instagram.com/mopiiercingsandco" target="_blank" rel="noreferrer">Instagram</a>
+                    <a href="https://www.tiktok.com/@mopiiercings" target="_blank" rel="noreferrer">TikTok</a>
+                    <a href="https://wa.me/27645038694" target="_blank" rel="noreferrer">WhatsApp</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-lower-grid">
+            <div class="contact-panel form-panel">
+                <div class="panel-header">
+                    <span class="panel-kicker">Get in Touch</span>
+                    <h3>Send us a message</h3>
+                </div>
+
+                <form class="contact-form" method="post">
                     <div class="form-group">
-                        <label for="fname">Full Name</label>
-                        <input type="text" id="fname" name="fname" required>
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Your username" required>
                     </div>
 
                     <div class="form-group">
                         <label for="femail">Email Address</label>
-                        <input type="email" id="femail" name="femail" required>
+                        <input type="email" id="femail" name="femail" placeholder="you@example.com" required>
                     </div>
 
-                    <div class="form-group">
-                        <label for="fphone">Phone Number</label>
-                        <input type="tel" id="fphone" name="fphone">
-                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fphone">Phone Number</label>
+                            <input type="tel" id="fphone" name="fphone" placeholder="+27 ...">
+                        </div>
 
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" required>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" placeholder="How can we help?" required>
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label for="message">Message</label>
-                        <textarea id="message" name="message" required></textarea>
+                        <textarea id="message" name="message" placeholder="Tell us about your piercing, tattoo, or enquiry..." required></textarea>
                     </div>
 
+                    <p id="contact-message" aria-live="polite"></p>
                     <button type="submit">Send Message</button>
                 </form>
             </div>
 
-            <div style="padding: 2em; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
-                <h3>Contact Information</h3>
-                <div style="margin: 1.5em 0;">
-                    <h4 style="color: #D4AF37; margin-bottom: 0.5em;"> Phone</h4>
-                    <p style="margin: 0;"><strong>+27 (645) 038-694</strong></p>
-                    <p style="margin: 0; color: #666; font-size: 0.95em;">Available Mon-Sun during business hours</p>
+            <aside class="contact-panel faq-panel">
+                <div class="panel-header">
+                    <span class="panel-kicker">FAQ</span>
+                    <h3>Frequently asked questions</h3>
                 </div>
 
-                <div style="margin: 1.5em 0;">
-                    <h4 style="color: #D4AF37; margin-bottom: 0.5em;"> Email</h4>
-                    <p style="margin: 0;"><strong>hello@mopiiercings.co.za</strong></p>
-                    <p style="margin: 0; color: #666; font-size: 0.95em;">WhatsApp available for quick inquiries</p>
-                </div>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <h4>How do I book an appointment?</h4>
+                        <p>Visit our <a href="bookings.html">Bookings page</a> to select your service, date, and time. You can also call us directly.</p>
+                    </div>
 
-                <div style="margin: 1.5em 0;">
-                    <h4 style="color: #D4AF37; margin-bottom: 0.5em;"> Location</h4>
-                    <p style="margin: 0;"><strong>Cnr De Beer & 155 Smit St</strong></p>
-                    <p style="margin: 0; color: #666;">Braamfontein, Johannesburg, 2001</p>
-                    <p style="margin: 0; color: #666;">South Africa</p>
-                </div>
+                    <div class="faq-item">
+                        <h4>Do you offer gift certificates?</h4>
+                        <p>Yes! Gift certificates are available in any amount. Contact us for details.</p>
+                    </div>
 
-                <div style="margin: 1.5em 0;">
-                    <h4 style="color: #D4AF37; margin-bottom: 0.5em;"> Hours</h4>
-                    <p style="margin: 0; color: #666;">Mon: 9:00 AM - 6:00 PM</p>
-                    <p style="margin: 0; color: #666;">Tue: 9:30 AM - 6:00 PM</p>
-                    <p style="margin: 0; color: #666;">Wed-Thu: 9:00 AM - 5:00 PM</p>
-                    <p style="margin: 0; color: #666;">Fri: 10:00 AM - 3:00 PM</p>
-                    <p style="margin: 0; color: #666;">Sat: 10:00 AM - 5:00 PM</p>
-                    <p style="margin: 0; color: #666;">Sun: 10:00 AM - 3:00 PM</p>
-                </div>
+                    <div class="faq-item">
+                        <h4>What aftercare should I follow?</h4>
+                        <p>We provide detailed aftercare instructions for all piercings and tattoos. Proper care is essential for healing and preventing infection.</p>
+                    </div>
 
-                <div style="margin: 2em 0 0 0;">
-                    <h4 style="color: #D4AF37; margin-bottom: 0.5em;">Follow Us</h4>
-                    <div style="display: flex; gap: 1em;">
-                        <a href="https://www.instagram.com/mopiiercingsandco" target="_blank" style="color: #2d5f3f; text-decoration: none; font-weight: bold;">Instagram</a>
-                        <a href="https://www.tiktok.com/@mopiiercings" target="_blank" style="color: #2d5f3f; text-decoration: none; font-weight: bold;">TikTok</a>
-                        <a href="https://wa.me/27645038694" target="_blank" style="color: #2d5f3f; text-decoration: none; font-weight: bold;">WhatsApp</a>
+                    <div class="faq-item">
+                        <h4>Are you using sterile equipment?</h4>
+                        <p>Absolutely! We use only sterile, single-use needles and follow all health and safety regulations.</p>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <h3 style="text-align: center; margin-top: 3em;">FAQ</h3>
-        <div style="max-width: 800px; margin: 2em auto; padding: 0 2em;">
-            <div style="margin: 1.5em 0; padding: 1.5em; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
-                <h4 style="color: #667eea; margin-top: 0;">How do I book an appointment?</h4>
-                <p>Visit our <a href="bookings.html" style="color: #667eea;">Bookings page</a> to select your service, date, and time. You can also call us directly.</p>
-            </div>
-
-            <div style="margin: 1.5em 0; padding: 1.5em; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
-                <h4 style="color: #667eea; margin-top: 0;">Do you offer gift certificates?</h4>
-                <p>Yes! Gift certificates are available in any amount. Contact us for details.</p>
-            </div>
-
-            <div style="margin: 1.5em 0; padding: 1.5em; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
-                <h4 style="color: #667eea; margin-top: 0;">What aftercare should I follow?</h4>
-                <p>We provide detailed aftercare instructions for all piercings and tattoos. Proper care is essential for healing and preventing infection.</p>
-            </div>
-
-            <div style="margin: 1.5em 0; padding: 1.5em; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
-                <h4 style="color: #667eea; margin-top: 0;">Are you using sterile equipment?</h4>
-                <p>Absolutely! We use only sterile, single-use needles and follow all health and safety regulations.</p>
-            </div>
+            </aside>
         </div>
     </main>
 
+    <section class="contact-map-section">
+        <div class="map-info">
+            <h3>Mo Piiercings & Co</h3>
+            <p>Beauty & spa in Johannesburg<br>
+            155 Smit Road Johannesburg 2001 · &lt; 1 km<br>
+            Open · Closes 18:00 · More hours<br>
+            064 503 8694</p>
+        </div>
+
+        <div class="map-embed">
+            <iframe
+                src="https://maps.google.com/maps?q=155%20Smit%20Road%20Johannesburg%202001&output=embed"
+                width="100%" height="320" style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </section>
+
     <footer>
-        <p>&copy; 2026 Mo Piiercings & Co. All rights reserved.</p>
-        <p>Phone: +27 (645) 038-694 | Braamfontein, Johannesburg</p>
+        <p>&copy; 2026 @ MO'S PIIERCINGS</p>
     </footer>
+
+    <script type="module" src="js/auth.js"></script>
 </body>
 </html>

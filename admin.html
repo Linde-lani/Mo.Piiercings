@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Mo Piiercings & Co</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <header>
+        <div class="header-brand-wrap">
+            <img src="pictures/logo.webp" alt="Mo Piiercings logo" class="site-logo" width="44" height="44">
+            <h1>Mo Piiercings & Co</h1>
+        </div>
+        <div class="header-actions">
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                </ul>
+            </nav>
+            <button type="button" class="logout-button" id="logout-link">LogOut</button>
+        </div>
+    </header>
+
+    <main class="admin-dashboard">
+        <h2>Admin Dashboard</h2>
+        <p id="admin-message" role="status">Checking administrator access...</p>
+
+        <section class="admin-panel card-panel">
+            <p id="migration-message" role="status"></p>
+            <h3>Bookings</h3>
+            <div class="admin-table-wrap">
+                <table class="appointments-table">
+                    <thead>
+                        <tr>
+                            <th>DATE &amp; TIME</th>
+                            <th>CUSTOMER</th>
+                            <th>SERVICE</th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-bookings">
+                        <tr><td colspan="5">Loading bookings...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mo Piiercings &amp; Co. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="js/auth.js?v=20261018-2"></script>
+    <script type="module" src="js/admin.js?v=20261018-2"></script>
+</body>
+</html>

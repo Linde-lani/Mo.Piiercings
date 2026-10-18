@@ -1,0 +1,116 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email in [
+          'lngubeni76@gmail.com',
+          'monesetumelo03@gmail.com'
+        ]
+        && request.auth.token.email_verified == true;
+    }
+
+    function ownsDocument() {
+      return signedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    match /users/{userId} {
+      allow read: if isAdmin() || (signedIn() && request.auth.uid == userId);
+      allow create, update: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly([
+          'username', 'name', 'email', 'phone', 'createdAt', 'updatedAt', 'lastLoginAt'
+        ])
+        && request.resource.data.username is string
+        && request.resource.data.username.size() > 0
+        && request.resource.data.username.size() <= 120
+        && request.resource.data.email == request.auth.token.email;
+      allow delete: if false;
+    }
+
+    match /bookingSlots/{slotId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+          'bookingId', 'date', 'time', 'createdAt'
+        ])
+        && slotId == request.resource.data.date + '_' + request.resource.data.time
+        && getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.slotId == slotId
+        && (
+          isAdmin()
+          || getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.userId == request.auth.uid
+        )
+        && getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.preferredDate == request.resource.data.date
+        && getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.preferredTime == request.resource.data.time
+        && getAfter(/databases/$(database)/documents/bookings/$(request.resource.data.bookingId)).data.status in ['pending', 'confirmed'];
+      allow update: if false;
+      allow delete: if isAdmin()
+        && getAfter(/databases/$(database)/documents/bookings/$(resource.data.bookingId)).data.status == 'cancelled';
+    }
+
+    match /bookings/{bookingId} {
+      allow read: if isAdmin() || ownsDocument();
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          'userId', 'username', 'email', 'phone', 'service', 'slotId',
+          'preferredDate', 'preferredTime', 'notes', 'cartItems',
+          'status', 'createdAt'
+        ])
+        && request.resource.data.username is string
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.phone is string
+        && request.resource.data['service'] is string
+        && request.resource.data.preferredDate is string
+        && request.resource.data.preferredTime is string
+        && request.resource.data.notes is string
+        && request.resource.data.cartItems is list
+        && request.resource.data.status == 'pending'
+        && request.resource.data.preferredTime in [
+          '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM',
+          '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
+        ]
+        && request.resource.data.slotId == request.resource.data.preferredDate + '_' + request.resource.data.preferredTime
+        && getAfter(/databases/$(database)/documents/bookingSlots/$(request.resource.data.slotId)).data.bookingId == bookingId
+        && getAfter(/databases/$(database)/documents/bookingSlots/$(request.resource.data.slotId)).data.date == request.resource.data.preferredDate
+        && getAfter(/databases/$(database)/documents/bookingSlots/$(request.resource.data.slotId)).data.time == request.resource.data.preferredTime;
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt', 'slotId'])
+        && request.resource.data.status in ['pending', 'confirmed', 'cancelled']
+        && (
+          !('slotId' in request.resource.data)
+          || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['slotId'])
+          || (
+            getAfter(/databases/$(database)/documents/bookingSlots/$(request.resource.data.slotId)).data.bookingId == bookingId
+          )
+        )
+        && (
+          request.resource.data.status != 'cancelled'
+          || !('slotId' in resource.data)
+          || !existsAfter(/databases/$(database)/documents/bookingSlots/$(resource.data.slotId))
+        );
+      allow delete: if false;
+    }
+
+    match /contacts/{contactId} {
+      allow read: if isAdmin() || ownsDocument();
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          'userId', 'username', 'email', 'phone', 'subject',
+          'message', 'createdAt'
+        ])
+        && request.resource.data.username is string
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.phone is string
+        && request.resource.data.subject is string
+        && request.resource.data.message is string;
+      allow update, delete: if false;
+    }
+  }
+}

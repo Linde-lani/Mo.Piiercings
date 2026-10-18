@@ -6,20 +6,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mo Piiercings & Co - Home</title>
     <link rel="stylesheet" href="css/styles.css" />
+    <style>
+    /* Page-level hero + features + CTA styles (moved from css/styles.css) */
+    .hero {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d5f3f 100%);
+        color: white;
+        padding: 1.5em 1.5em;
+        text-align: center;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-top: 4px solid #D4AF37;
+    }
+
+    .hero h2 {
+        font-size: 2.5em;
+        margin-bottom: 1em;
+        color: #D4AF37;
+    }
+
+    .hero p {
+        font-size: 1.3em;
+        opacity: 0.95;
+        color: #e8d4a8;
+    }
+
+    .features {
+        padding: 3em 2em;
+        background-color: #f5f5f5;
+        border-top: 2px solid #D4AF37;
+    }
+
+    .features h3 {
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 2em;
+        color: #1a1a1a;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .service-cards {
+        display: flex;
+        justify-content: space-around;
+        gap: 2em;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .card {
+        border: 2px solid #D4AF37;
+        border-radius: 12px;
+        padding: 2em;
+        width: 30%;
+        min-width: 250px;
+        text-align: center;
+        background: white;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover { transform: translateY(-10px); box-shadow: 0 8px 25px rgba(212,175,55,0.3); border-color: #2d5f3f; }
+
+    .card h4 { color: #2d5f3f; font-size: 1.5em; margin-bottom: 0.5em; }
+    .card p { color: #666; margin-bottom: 1.5em; }
+
+    .cta { background: linear-gradient(135deg, #2d5f3f 0%, #1a1a1a 100%); color: white; padding: 3em 2em; text-align: center; border-top: 3px solid #D4AF37; border-bottom: 3px solid #D4AF37; }
+    .cta h3 { font-size: 2em; margin-bottom: 0.5em; color: #D4AF37; }
+    .cta p { font-size: 1.1em; margin-bottom: 2em; color: #e8d4a8; }
+    .cta-btn { margin: 0 1em; }
+    </style>
 </head>
 <body>
     <header>
-        <h1>Mo Piiercings & Co</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="products.html">Products & Services</a></li>
-                <li><a href="bookings.html">Bookings</a></li>
-                <li><a href="contact.html">Contact Us</a></li>
-                <li><a href="about.html">About Us</a></li>
-                <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
-            </ul>
-        </nav>
+        <div class="header-brand-wrap">
+            <img src="pictures/logo.webp" alt="Mo Piiercings logo" class="site-logo" width="44" height="44">
+            <h1>Mo Piiercings & Co</h1>
+        </div>
+        <div class="header-actions">
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="products.html">Products & Services</a></li>
+                    <li><a href="bookings.html">Bookings</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
+                </ul>
+            </nav>
+            <button type="button" class="logout-button" id="logout-link">LogOut</button>
+        </div>
     </header>
 
     <section class="hero">
@@ -60,5 +140,7 @@
         <p>&copy; 2026 Mo Piiercings & Co. All rights reserved.</p>
         <p>Braamfontein, Johannesburg | Phone: +27 (645) 038-694</p>
     </footer>
+
+    <script type="module" src="js/auth.js"></script>
 </body>
 </html>

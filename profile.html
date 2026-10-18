@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile - MO'S PIERCINGS</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <header>
+        <div class="header-brand-wrap">
+            <img src="pictures/logo.webp" alt="Mo Piiercings logo" class="site-logo" width="44" height="44">
+            <h1>Mo Piiercings & Co</h1>
+        </div>
+        <div class="header-actions">
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="products.html">Products & Services</a></li>
+                    <li><a href="bookings.html">Bookings</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
+                </ul>
+            </nav>
+            <button type="button" class="logout-button" id="logout-link">LogOut</button>
+        </div>
+    </header>
+
+    <main class="profile-page">
+        <section class="profile-top">
+            <div class="profile-summary card-panel">
+                <div class="profile-identity">
+                    <h2 id="profile-user-username">Username</h2>
+                    <p id="profile-user-email">Email</p>
+                </div>
+                <a href="#" class="btn profile-btn">Edit profile</a>
+            </div>
+
+            <div class="profile-actions card-panel">
+                <a href="#">My Bookings</a>
+                <a href="#">Saved Favourites</a>
+                <a href="#">My Orders</a>
+            </div>
+        </section>
+
+        <section class="appointments card-panel">
+            <div class="panel-header">
+                <h3>Upcoming Appointments</h3>
+                <a href="#">VIEW ALL</a>
+            </div>
+
+            <table class="appointments-table">
+                <thead>
+                    <tr>
+                        <th>DATE</th>
+                        <th>PIERCING</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody id="appointments-list">
+                    <tr><td colspan="3">Loading appointments...</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>2026 @ MO'S PIERCINGS</p>
+    </footer>
+
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>

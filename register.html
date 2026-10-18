@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mo's Piercings | Register</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+    /* Auth page styles moved from css/styles.css to reduce global scope */
+    .auth-page {
+        min-height: 75vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3em 1.5em;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d5f3f 100%);
+    }
+
+    .auth-shell {
+        width: min(100%, 1000px);
+        display: grid;
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+        gap: 2em;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(212, 175, 55, 0.8);
+        border-radius: 18px;
+        padding: 2em;
+    }
+
+    .auth-panel {
+        background: #fff;
+        border: 2px solid #D4AF37;
+        border-radius: 14px;
+        padding: 2em;
+    }
+
+    .auth-panel h2 {
+        color: #1a1a1a;
+        text-align: center;
+        margin-bottom: 1.5em;
+        font-size: 2em;
+        letter-spacing: 1px;
+    }
+
+    .auth-form { display: flex; flex-direction: column; gap: 1em; }
+
+    .text-link { display: inline-block; margin: 0.2em 0 1em; color: #2d5f3f; text-decoration: none; font-weight: 600; }
+    .text-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-brand-wrap">
+            <img src="pictures/logo.webp" alt="Mo Piiercings logo" class="site-logo" width="44" height="44">
+            <h1>Mo Piiercings & Co</h1>
+        </div>
+        <div class="header-actions">
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="products.html">Products & Services</a></li>
+                    <li><a href="bookings.html">Bookings</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
+                </ul>
+            </nav>
+            <button type="button" class="logout-button" id="logout-link">LogOut</button>
+        </div>
+    </header>
+
+    <main class="auth-page single-auth-page">
+        <section class="auth-panel auth-single-panel">
+            <h2>Register</h2>
+            <form class="auth-form" id="register-form" method="post">
+                <div class="form-group">
+                    <label for="register-username">Username</label>
+                    <input id="register-username" type="text" name="username" placeholder="Username" maxlength="120" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input id="register-email" type="email" name="email" placeholder="Email" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input id="register-password" type="password" name="password" placeholder="Password" minlength="6" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input id="confirm-password" type="password" name="confirm_password" placeholder="Confirm Password" required />
+                </div>
+
+                <p id="register-message" aria-live="polite"></p>
+                <button type="submit">Register</button>
+            </form>
+            <p class="auth-switch">Already have an account? <a href="login.html">Log in here</a>.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mo Piiercings & Co. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>
