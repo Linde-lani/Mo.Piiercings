@@ -92,35 +92,27 @@ async function ensureUserProfile(user, username) {
 
 function toggleProtectedUi(user) {
     document.querySelectorAll('.profile-icon, .logout-button, a[href="profile.html"]').forEach((element) => {
-        element.style.display = user ? '' : 'none';
+        element.style.visibility = user ? 'visible' : 'hidden';
     });
 }
 
 async function updateAdminLink(user) {
     const existingLink = document.querySelector('[data-admin-link]');
+    if (!existingLink) {
+        console.error('Admin navigation placeholder is missing.');
+        return;
+    }
+
     if (!user) {
-        existingLink?.remove();
+        existingLink.style.visibility = 'hidden';
         return;
     }
 
     try {
         const token = await user.getIdTokenResult();
-        if (!ADMIN_EMAILS.has(user.email?.trim().toLowerCase()) || token.claims.email_verified !== true) {
-            existingLink?.remove();
-            return;
-        }
-
-        if (!existingLink) {
-            const navList = document.querySelector('header nav ul');
-            if (!navList) return;
-            const item = document.createElement('li');
-            const link = document.createElement('a');
-            link.href = 'admin.html';
-            link.dataset.adminLink = 'true';
-            link.textContent = 'Admin Dashboard';
-            item.append(link);
-            navList.append(item);
-        }
+        const isVerifiedAdmin = ADMIN_EMAILS.has(user.email?.trim().toLowerCase())
+            && token.claims.email_verified === true;
+        existingLink.style.visibility = isVerifiedAdmin ? 'visible' : 'hidden';
     } catch (error) {
         console.error('Could not determine administrator access for navigation.', error);
     }

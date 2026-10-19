@@ -100,6 +100,16 @@ header nav a {
     text-decoration: none;
 }
 
+header nav a[href="profile.html"],
+header nav a[data-admin-link],
+.logout-button {
+    visibility: hidden;
+}
+
+body.auth-entry-page header nav .profile-nav-item {
+    display: none;
+}
+
 header nav a:hover,
 header nav a:focus-visible {
     background-color: #2d5f3f;
