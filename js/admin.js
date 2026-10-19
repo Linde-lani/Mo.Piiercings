@@ -177,11 +177,19 @@ document.addEventListener('click', async (event) => {
     if (!button || button.disabled) return;
     button.disabled = true;
 
+    const row = button.closest('tr');
+    const statusCell = row?.querySelectorAll('td')[3];
+    const actionCell = row?.querySelectorAll('td')[4];
+    const actionLabel = button.dataset.action === 'confirm-booking' ? 'Confirmed' : 'Cancelled';
+
+    if (statusCell) statusCell.textContent = actionLabel;
+    if (actionCell) {
+        actionCell.textContent = actionLabel;
+    }
+
     try {
         const bookingRef = doc(db, 'bookings', button.dataset.id);
         const status = button.dataset.action === 'confirm-booking' ? 'confirmed' : 'cancelled';
-
-        button.remove();
 
         await runTransaction(db, async (transaction) => {
             const bookingSnapshot = await transaction.get(bookingRef);
