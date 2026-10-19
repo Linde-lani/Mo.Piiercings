@@ -176,7 +176,14 @@ function handleBookingAvailability() {
             const isBooked = reservedTimes.has(slot.dataset.time);
             slot.disabled = isBooked;
             slot.classList.toggle('unavailable', isBooked);
+            slot.setAttribute('aria-disabled', String(isBooked));
             slot.setAttribute('aria-label', `${slot.dataset.time}${isBooked ? ', unavailable' : ', available'}`);
+            slot.title = isBooked ? 'Unavailable' : 'Available';
+            slot.style.cursor = isBooked ? 'not-allowed' : 'pointer';
+            slot.style.opacity = isBooked ? '0.65' : '1';
+            slot.style.backgroundColor = isBooked ? '#e2e2e2' : '';
+            slot.style.borderColor = isBooked ? '#b8b8b8' : '';
+            slot.style.color = isBooked ? '#777' : '';
         });
 
         if (reservedTimes.has(timeInput.value)) {

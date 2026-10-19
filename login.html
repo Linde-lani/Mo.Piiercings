@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mo's Piercings | LogIn</title>
-    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/styles.css?v=10" />
     <style>
     /* Auth page styles moved from css/styles.css to reduce global scope */
     .auth-page {
@@ -55,7 +55,7 @@
             <h1>Mo Piiercings & Co</h1>
         </div>
         <div class="header-actions">
-            <nav>
+            <nav class="site-navigation">
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="products.html">Products & Services</a></li>
@@ -66,7 +66,6 @@
                     <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
                 </ul>
             </nav>
-            <button type="button" class="logout-button" id="logout-link">LogOut</button>
         </div>
     </header>
 
@@ -96,6 +95,7 @@
 
     <footer>
         <p>&copy; 2026 Mo Piiercings & Co. All rights reserved.</p>
+        <button type="button" class="logout-button" id="logout-link">LogOut</button>
     </footer>
 
     <script type="module" src="js/auth.js?v=20261018-2"></script>

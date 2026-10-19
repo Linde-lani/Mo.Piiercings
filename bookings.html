@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Book an Appointment - Mo's Piercings</title>
-    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/styles.css?v=10" />
 </head>
 <body>
     <header>
@@ -13,7 +13,7 @@
             <h1>Mo Piiercings & Co</h1>
         </div>
         <div class="header-actions">
-            <nav>
+            <nav class="site-navigation">
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="products.html">Products & Services</a></li>
@@ -24,7 +24,6 @@
                     <li><a href="cart.html">Cart <span class="cart-count">0</span></a></li>
                 </ul>
             </nav>
-            <button type="button" class="logout-button" id="logout-link">LogOut</button>
         </div>
     </header>
 
@@ -149,9 +148,34 @@
     <footer>
         <p>&copy; 2026 Mo's Piercings. All rights reserved.</p>
         <p>Phone: (555) 123-4567 | Email: info@mopiercings.com</p>
+        <button type="button" class="logout-button" id="logout-link">LogOut</button>
     </footer>
 
     <script>
+        function getSelectedServiceCartItem(selectedService) {
+            if (!selectedService) return null;
+
+            const serviceOption = Array.from(document.querySelectorAll('#service option')).find((option) =>
+                option.value.toLowerCase() === selectedService.toLowerCase()
+                || option.textContent.toLowerCase().includes(selectedService.toLowerCase())
+            );
+
+            let price = 0;
+            if (serviceOption) {
+                const match = serviceOption.textContent.match(/R\s*([0-9,]+(?:\.\d+)?)/i);
+                if (match) {
+                    price = Number(match[1].replace(/,/g, ''));
+                }
+            }
+
+            return {
+                name: selectedService,
+                price,
+                quantity: 1,
+                image: 'pictures/jewelry_1.webp'
+            };
+        }
+
         function populateBookingSummary() {
             let cart = [];
             try {
@@ -166,59 +190,68 @@
 
             if (!list || !total) return;
 
-            if (!cart.length) {
+            const selectedService = service ? service.value : '';
+            let summaryItems = [];
+
+            if (selectedService) {
+                const matchingCartItem = cart.find((item) => item.name.toLowerCase() === selectedService.toLowerCase());
+                if (matchingCartItem) {
+                    summaryItems = [{ ...matchingCartItem }];
+                } else {
+                    const fallbackItem = { name: selectedService, price: 0, quantity: 1, image: 'pictures/jewelry_1.webp' };
+                    const selectedOption = Array.from(service.options).find((option) => option.value === selectedService);
+                    const match = selectedOption?.textContent.match(/R\s*([0-9,]+(?:\.\d+)?)/i);
+                    if (match) {
+                        fallbackItem.price = Number(match[1].replace(/,/g, ''));
+                    }
+                    summaryItems = [fallbackItem];
+                }
+            }
+
+            if (!summaryItems.length) {
                 list.innerHTML = '<li class="booking-empty">No items selected yet.</li>';
                 total.textContent = 'R0';
                 document.getElementById('cart_items').value = JSON.stringify([]);
                 return;
             }
 
-            const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
-            list.innerHTML = cart.map((item) => `
+            const subtotal = summaryItems.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
+            list.innerHTML = summaryItems.map((item) => `
                 <li>
                     <span>${item.name} x ${item.quantity}</span>
                     <strong>R${((Number(item.price) || 0) * (Number(item.quantity) || 1)).toLocaleString('en-ZA')}</strong>
                 </li>
             `).join('');
             total.textContent = new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', maximumFractionDigits: 0 }).format(subtotal);
-            document.getElementById('cart_items').value = JSON.stringify(cart);
-
-            if (service) {
-                const firstItemName = cart[0]?.name;
-                if (firstItemName) {
-                    const matchingOption = Array.from(service.options).find((option) =>
-                        option.value.toLowerCase() === firstItemName.toLowerCase()
-                        || option.textContent.toLowerCase().includes(firstItemName.toLowerCase())
-                    );
-                    if (matchingOption) {
-                        service.value = matchingOption.value;
-                    }
-                }
-            }
+            document.getElementById('cart_items').value = JSON.stringify(summaryItems);
         }
 
         document.addEventListener('DOMContentLoaded', function () {
             const serviceSelect = document.getElementById('service');
             const requestedService = new URLSearchParams(window.location.search).get('service');
+
+            if (requestedService && Array.from(serviceSelect.options).some(option => option.value === requestedService)) {
+                serviceSelect.value = requestedService;
+            }
+
             if (requestedService) {
                 try {
-                    const cart = JSON.parse(localStorage.getItem('mopiiercings_cart') || '[]');
-                    if (Array.isArray(cart)) {
-                        const cleanedCart = cart.filter((item) =>
-                            item.id !== requestedService || item.image
-                        );
-                        if (cleanedCart.length !== cart.length) {
-                            localStorage.setItem('mopiiercings_cart', JSON.stringify(cleanedCart));
-                        }
+                    const serviceItem = { name: requestedService, price: 0, quantity: 1, image: 'pictures/jewelry_1.webp' };
+                    const selectedOption = Array.from(serviceSelect.options).find((option) => option.value === requestedService);
+                    const match = selectedOption?.textContent.match(/R\s*([0-9,]+(?:\.\d+)?)/i);
+                    if (match) {
+                        serviceItem.price = Number(match[1].replace(/,/g, ''));
                     }
+                    localStorage.setItem('mopiiercings_cart', JSON.stringify([serviceItem]));
                 } catch (error) {
-                    console.error('Could not clean up an item left by the previous booking flow.', error);
+                    console.error('Could not set the selected service in local storage.', error);
                 }
             }
 
             populateBookingSummary();
-            if (requestedService && Array.from(serviceSelect.options).some(option => option.value === requestedService)) {
-                serviceSelect.value = requestedService;
+
+            if (serviceSelect) {
+                serviceSelect.addEventListener('change', populateBookingSummary);
             }
         });
     </script>
