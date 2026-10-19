@@ -1,10 +1,14 @@
 import {
+    EmailAuthProvider,
     createUserWithEmailAndPassword,
     onAuthStateChanged,
+    reauthenticateWithCredential,
     sendEmailVerification,
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
     signOut,
+    updateEmail,
+    updatePassword,
     updateProfile
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import {
@@ -43,6 +47,8 @@ function getErrorMessage(error) {
         'auth/too-many-requests': 'Too many attempts. Please wait a while and try again.',
         'auth/user-not-found': 'No account was found for this email address.',
         'auth/wrong-password': 'The email or password is incorrect.',
+        'auth/requires-recent-login': 'For security, sign out and sign in again before changing this information.',
+        'auth/operation-not-allowed': 'This account cannot change credentials using email and password.',
         'permission-denied': 'Firestore denied access. Check that the deployed security rules match this app and that you are signed in.'
     };
 
@@ -361,6 +367,8 @@ function handleProfilePage(user, profile) {
     if (emailElement) emailElement.textContent = profile.email || user.email || 'Email';
     if (avatar) avatar.textContent = (profile.username || 'U').charAt(0).toUpperCase();
 
+    handleProfileEdit(user, profile);
+
     const appointments = document.getElementById('appointments-list');
     if (!appointments) return;
 
@@ -397,6 +405,153 @@ function handleProfilePage(user, profile) {
             cell.colSpan = 3;
             cell.textContent = 'Appointments could not be loaded. Please try again later.';
         });
+}
+
+function handleProfileEdit(user, profile) {
+    const form = document.getElementById('profile-edit-form');
+    if (!form || form.dataset.initialized === 'true') return;
+    form.dataset.initialized = 'true';
+
+    const usernameInput = document.getElementById('edit-username');
+    const emailInput = document.getElementById('edit-email');
+    const currentPasswordInput = document.getElementById('current-password');
+    const newPasswordInput = document.getElementById('new-password');
+    const confirmPasswordInput = document.getElementById('confirm-new-password');
+    const message = document.getElementById('profile-edit-message');
+
+    usernameInput.value = profile.username || '';
+    emailInput.value = user.email || profile.email || '';
+    currentPasswordInput.autocomplete = 'current-password';
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        setMessage(message, '', false);
+
+        const username = usernameInput.value.trim();
+        const email = emailInput.value.trim() || user.email || profile.email || '';
+        const newPassword = newPasswordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        const usernameChanged = username !== (profile.username || '');
+        const emailChanged = email.toLowerCase() !== (user.email || '').toLowerCase();
+        const passwordChanged = newPassword.length > 0;
+
+        if (!username) {
+            setMessage(message, 'Username is required.', true);
+            return;
+        }
+        if (!passwordChanged && confirmPassword) {
+            setMessage(message, 'Enter a new password before confirming it.', true);
+            return;
+        }
+        if (passwordChanged && newPassword !== confirmPassword) {
+            setMessage(message, 'The new passwords do not match.', true);
+            return;
+        }
+        if (!usernameChanged && !emailChanged && !passwordChanged) {
+            setMessage(message, 'There are no changes to save.', false);
+            return;
+        }
+        if ((emailChanged || passwordChanged) && !currentPasswordInput.value) {
+            setMessage(message, 'Enter your current password to change your email or password.', true);
+            return;
+        }
+
+        const submitButton = form.querySelector('[type="submit"]');
+        submitButton.disabled = true;
+        const completedChanges = [];
+        let profileSaved = false;
+        let verificationSent = false;
+        let verificationError = '';
+
+        try {
+            if (emailChanged || passwordChanged) {
+                if (!user.email) {
+                    throw new Error('This account does not have an email address for password verification.');
+                }
+                const credential = EmailAuthProvider.credential(user.email, currentPasswordInput.value);
+                await reauthenticateWithCredential(user, credential);
+            }
+
+            if (usernameChanged) {
+                await updateProfile(user, { displayName: username });
+                completedChanges.push('username');
+            }
+
+            if (emailChanged) {
+                await updateEmail(user, email);
+                completedChanges.push('email');
+                await user.reload();
+                await user.getIdToken(true);
+            }
+
+            await setDoc(doc(db, 'users', user.uid), {
+                username,
+                email: user.email,
+                updatedAt: serverTimestamp()
+            }, { merge: true });
+            profileSaved = true;
+            profile.username = username;
+            profile.email = user.email;
+
+            const usernameElement = document.getElementById('profile-user-username');
+            const emailElement = document.getElementById('profile-user-email');
+            const avatar = document.getElementById('profile-avatar');
+            if (usernameElement) usernameElement.textContent = username;
+            if (emailElement) emailElement.textContent = user.email;
+            if (avatar) avatar.textContent = username.charAt(0).toUpperCase();
+
+            if (emailChanged) {
+                try {
+                    await sendEmailVerification(user);
+                    verificationSent = true;
+                } catch (error) {
+                    verificationError = getErrorMessage(error);
+                }
+            }
+
+            if (passwordChanged) {
+                await updatePassword(user, newPassword);
+                completedChanges.push('password');
+            }
+
+            newPasswordInput.value = '';
+            confirmPasswordInput.value = '';
+            currentPasswordInput.value = '';
+            if (verificationError) {
+                setMessage(message, `Changes saved, but the verification email could not be sent: ${verificationError}`, true);
+            } else if (emailChanged) {
+                setMessage(message, 'Changes saved. Check your new email address for a verification link.', false);
+            } else {
+                setMessage(message, 'Your account information has been updated.', false);
+            }
+        } catch (error) {
+            const details = [];
+            if (completedChanges.length) {
+                details.push(`${completedChanges.join(' and ')} updated in Firebase Authentication`);
+            }
+            if (profileSaved) {
+                details.push('Firestore profile saved');
+            } else if (completedChanges.length) {
+                details.push('Firestore profile could not be synchronized');
+            }
+            if (emailChanged) {
+                if (verificationError) {
+                    details.push(`verification email could not be sent: ${verificationError}`);
+                } else if (verificationSent) {
+                    details.push('verification link sent to the new email address');
+                } else if (!profileSaved) {
+                    details.push('verification link was not sent because the Firestore profile could not be synchronized');
+                }
+            }
+            if (passwordChanged && !completedChanges.includes('password')) {
+                details.push('password was not updated');
+            }
+            details.push(getErrorMessage(error));
+            setMessage(message, `${details.join('. ')}.`, true);
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
 }
 
 function handleBookingForm(user, profile) {

@@ -169,6 +169,7 @@
             if (!cart.length) {
                 list.innerHTML = '<li class="booking-empty">No items selected yet.</li>';
                 total.textContent = 'R0';
+                document.getElementById('cart_items').value = JSON.stringify([]);
                 return;
             }
 
@@ -182,6 +183,18 @@
             total.textContent = new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', maximumFractionDigits: 0 }).format(subtotal);
             document.getElementById('cart_items').value = JSON.stringify(cart);
 
+            if (service) {
+                const firstItemName = cart[0]?.name;
+                if (firstItemName) {
+                    const matchingOption = Array.from(service.options).find((option) =>
+                        option.value.toLowerCase() === firstItemName.toLowerCase()
+                        || option.textContent.toLowerCase().includes(firstItemName.toLowerCase())
+                    );
+                    if (matchingOption) {
+                        service.value = matchingOption.value;
+                    }
+                }
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function () {

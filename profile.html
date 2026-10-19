@@ -35,7 +35,7 @@
                     <h2 id="profile-user-username">Username</h2>
                     <p id="profile-user-email">Email</p>
                 </div>
-                <a href="#" class="btn profile-btn">Edit profile</a>
+                <a href="#profile-edit-form" class="btn profile-btn">Edit profile</a>
             </div>
 
             <div class="profile-actions card-panel">
@@ -43,6 +43,41 @@
                 <a href="#">Saved Favourites</a>
                 <a href="#">My Orders</a>
             </div>
+        </section>
+
+        <section class="profile-edit card-panel">
+            <h3>Edit account information</h3>
+            <p>Leave a field unchanged if you do not want to update it. Clear the email field to keep your current email. Changing your email requires verifying the new address.</p>
+            <form id="profile-edit-form" method="post">
+                <div class="form-group">
+                    <label for="edit-username">Username</label>
+                    <input id="edit-username" name="username" type="text" maxlength="120" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-email">Email address</label>
+                    <input id="edit-email" name="email" type="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="current-password">Current password</label>
+                    <input id="current-password" name="current_password" type="password" autocomplete="current-password">
+                    <small>Required to change your email address or password.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-password">New password</label>
+                    <input id="new-password" name="new_password" type="password" minlength="6" autocomplete="new-password">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-new-password">Confirm new password</label>
+                    <input id="confirm-new-password" name="confirm_new_password" type="password" minlength="6" autocomplete="new-password">
+                </div>
+
+                <p id="profile-edit-message" aria-live="polite"></p>
+                <button type="submit">Save changes</button>
+            </form>
         </section>
 
         <section class="appointments card-panel">
@@ -70,6 +105,6 @@
         <p>2026 @ MO'S PIERCINGS</p>
     </footer>
 
-    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/auth.js?v=20261018-3"></script>
 </body>
 </html>

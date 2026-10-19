@@ -18,6 +18,10 @@ const validTimes = new Set([
     '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
 ]);
 
+function normalizeStatus(status) {
+    return String(status || 'pending').trim().toLowerCase() || 'pending';
+}
+
 function showMessage(element, text, isError) {
     element.textContent = text;
     element.setAttribute('role', isError ? 'alert' : 'status');
@@ -41,27 +45,27 @@ function renderBookings(bookings) {
 
     bookings.sort((a, b) => `${a.preferredDate || ''} ${a.preferredTime || ''}`.localeCompare(`${b.preferredDate || ''} ${b.preferredTime || ''}`));
     bookings.forEach((booking) => {
+        const normalizedStatus = normalizeStatus(booking.status);
         const row = bookingsBody.insertRow();
         addCell(row, `${booking.preferredDate || 'Date pending'} ${booking.preferredTime || ''}`.trim());
         addCell(row, `${booking.username || 'Customer'} (${booking.email || 'No email'})`);
         addCell(row, booking.service);
-        addCell(row, booking.status || 'Pending');
+        addCell(row, normalizedStatus === 'pending' ? 'Pending' : normalizedStatus === 'confirmed' ? 'Confirmed' : normalizedStatus === 'cancelled' ? 'Cancelled' : 'Pending');
         const actionCell = row.insertCell();
 
-        if (booking.status === 'cancelled') {
+        if (normalizedStatus === 'cancelled') {
             actionCell.textContent = 'Cancelled';
             return;
         }
 
-        if (booking.status === 'confirmed') {
-            actionCell.textContent = 'Confirmed';
+        if (normalizedStatus === 'confirmed') {
             const cancelButton = document.createElement('button');
             cancelButton.type = 'button';
             cancelButton.className = 'btn secondary';
             cancelButton.dataset.action = 'cancel-booking';
             cancelButton.dataset.id = booking.id;
             cancelButton.textContent = 'Cancel';
-            actionCell.append(' ', cancelButton);
+            actionCell.append(cancelButton);
             return;
         }
 
@@ -71,14 +75,22 @@ function renderBookings(bookings) {
         confirmButton.dataset.action = 'confirm-booking';
         confirmButton.dataset.id = booking.id;
         confirmButton.textContent = 'Confirm';
-        actionCell.append(confirmButton);
+
+        const cancelButton = document.createElement('button');
+        cancelButton.type = 'button';
+        cancelButton.className = 'btn secondary';
+        cancelButton.dataset.action = 'cancel-booking';
+        cancelButton.dataset.id = booking.id;
+        cancelButton.textContent = 'Cancel';
+
+        actionCell.append(confirmButton, ' ', cancelButton);
     });
 }
 
 async function migrateLegacyBookings(bookings) {
     const legacyBookings = bookings.filter((booking) =>
         !booking.slotId
-        && booking.status !== 'cancelled'
+        && normalizeStatus(booking.status) !== 'cancelled'
         && booking.preferredDate
         && validTimes.has(booking.preferredTime)
     );
@@ -92,7 +104,7 @@ async function migrateLegacyBookings(bookings) {
 
         const result = await runTransaction(db, async (transaction) => {
             const currentBooking = await transaction.get(bookingRef);
-            if (!currentBooking.exists() || currentBooking.data().status === 'cancelled') return 'skipped';
+            if (!currentBooking.exists() || normalizeStatus(currentBooking.data().status) === 'cancelled') return 'skipped';
             if (currentBooking.data().slotId) return 'skipped';
 
             const slotSnapshot = await transaction.get(slotRef);
@@ -110,7 +122,7 @@ async function migrateLegacyBookings(bookings) {
             }
             transaction.update(bookingRef, {
                 slotId,
-                status: currentBooking.data().status || 'pending',
+                status: normalizeStatus(currentBooking.data().status),
                 updatedAt: serverTimestamp()
             });
             return 'migrated';
@@ -139,7 +151,8 @@ async function loadDashboard(user) {
     showMessage(message, 'Administrator access verified.', false);
     const initialBookings = (await getDocs(collection(db, 'bookings'))).docs.map((snapshot) => ({
         ...snapshot.data(),
-        id: snapshot.id
+        id: snapshot.id,
+        status: normalizeStatus(snapshot.data().status)
     }));
 
     const migration = await migrateLegacyBookings(initialBookings);
@@ -153,7 +166,8 @@ async function loadDashboard(user) {
 
     const bookings = (await getDocs(collection(db, 'bookings'))).docs.map((snapshot) => ({
         ...snapshot.data(),
-        id: snapshot.id
+        id: snapshot.id,
+        status: normalizeStatus(snapshot.data().status)
     }));
     renderBookings(bookings);
 }
@@ -167,6 +181,8 @@ document.addEventListener('click', async (event) => {
         const bookingRef = doc(db, 'bookings', button.dataset.id);
         const status = button.dataset.action === 'confirm-booking' ? 'confirmed' : 'cancelled';
 
+        button.remove();
+
         await runTransaction(db, async (transaction) => {
             const bookingSnapshot = await transaction.get(bookingRef);
             if (!bookingSnapshot.exists()) {
@@ -174,7 +190,7 @@ document.addEventListener('click', async (event) => {
             }
 
             const booking = bookingSnapshot.data();
-            if (booking.status === 'cancelled') {
+            if (normalizeStatus(booking.status) === 'cancelled') {
                 throw new Error('This booking has already been cancelled.');
             }
 
@@ -186,7 +202,7 @@ document.addEventListener('click', async (event) => {
             }
 
             transaction.update(bookingRef, {
-                status,
+                status: normalizeStatus(status),
                 updatedAt: serverTimestamp()
             });
             if (slotSnapshot && slotSnapshot.exists()) {
