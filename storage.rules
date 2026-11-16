@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email in [
+          'lngubeni76@gmail.com',
+          'monesetumelo03@gmail.com'
+        ]
+        && request.auth.token.email_verified == true;
+    }
+
+    match /service-images/{fileName} {
+      allow read: if signedIn();
+      allow create, update: if isAdmin()
+        && request.resource.size <= 5242880
+        && request.resource.contentType in ['image/jpeg', 'image/png', 'image/webp'];
+      allow delete: if isAdmin();
+    }
+  }
+}

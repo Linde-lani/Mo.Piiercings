@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard | Mo Piiercings & Co</title>
-    <link rel="stylesheet" href="css/styles.css?v=13" />
+    <link rel="stylesheet" href="css/styles.css?v=14" />
 </head>
 <body>
     <header>
@@ -48,6 +48,32 @@
             </div>
         </section>
 
+        <section class="admin-panel card-panel" id="service-catalog-panel" hidden>
+            <h3>Add a Bookable Service</h3>
+            <p>Add a new piercing or other service with a photo. It will appear on the booking form and Products &amp; Services page.</p>
+            <form id="service-form" class="admin-service-form">
+                <div class="form-group">
+                    <label for="service-name">Service name</label>
+                    <input type="text" id="service-name" name="name" maxlength="80" required>
+                </div>
+                <div class="form-group">
+                    <label for="service-description">Description</label>
+                    <textarea id="service-description" name="description" maxlength="500" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="service-price">Price (R)</label>
+                    <input type="number" id="service-price" name="price" min="0.01" max="1000000" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="service-image">Image (JPEG, PNG, or WebP; max 5 MB)</label>
+                    <input type="file" id="service-image" name="image" accept="image/jpeg,image/png,image/webp" required>
+                    <img id="service-image-preview" class="admin-service-preview" alt="Selected service image preview" hidden>
+                </div>
+                <p id="service-form-message" role="status" aria-live="polite"></p>
+                <button type="submit" class="btn">Add Service</button>
+            </form>
+        </section>
+
     </main>
 
     <footer>
@@ -55,7 +81,7 @@
         <button type="button" class="logout-button" id="logout-link">LogOut</button>
     </footer>
 
-    <script type="module" src="js/auth.js?v=20261019-2"></script>
-    <script type="module" src="js/admin.js?v=20261018-2"></script>
+    <script type="module" src="js/auth.js?v=20261111-3"></script>
+    <script type="module" src="js/admin.js?v=20261111-2"></script>
 </body>
 </html>

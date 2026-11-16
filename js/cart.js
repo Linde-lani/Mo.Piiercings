@@ -208,21 +208,19 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.add-to-cart').forEach((button) => {
-            button.addEventListener('click', () => {
-                const item = {
-                    name: button.dataset.name,
-                    price: parsePrice(button.dataset.price),
-                    quantity: Number(button.dataset.quantity || 1),
-                    image: button.dataset.image || 'pictures/jewelry_1.webp'
-                };
-
-                if (!item.name) return;
-                addToCart(item);
-            });
-        });
-
         document.addEventListener('click', (event) => {
+            const addButton = event.target.closest('.add-to-cart');
+            if (addButton) {
+                const item = {
+                    name: addButton.dataset.name,
+                    price: parsePrice(addButton.dataset.price),
+                    quantity: Number(addButton.dataset.quantity || 1),
+                    image: addButton.dataset.image || 'pictures/jewelry_1.webp'
+                };
+                if (item.name) addToCart(item);
+                return;
+            }
+
             const quantityButton = event.target.closest('[data-qty-action]');
             if (quantityButton) {
                 const action = quantityButton.dataset.qtyAction;

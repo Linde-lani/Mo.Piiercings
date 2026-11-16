@@ -5,18 +5,32 @@ import {
     getDoc,
     getDocs,
     runTransaction,
+    setDoc,
     serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+import {
+    deleteObject,
+    getDownloadURL,
+    ref,
+    uploadBytes
+} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js';
 import { ADMIN_EMAILS } from './admin-config.js?v=20261018-2';
-import { auth, db } from './firebase.js';
+import { auth, db, storage } from './firebase.js?v=20261111-1';
 
 const message = document.getElementById('admin-message');
 const migrationMessage = document.getElementById('migration-message');
 const bookingsBody = document.getElementById('admin-bookings');
+const servicePanel = document.getElementById('service-catalog-panel');
+const serviceForm = document.getElementById('service-form');
+const serviceFormMessage = document.getElementById('service-form-message');
+const serviceImageInput = document.getElementById('service-image');
+const serviceImagePreview = document.getElementById('service-image-preview');
 const validTimes = new Set([
     '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM',
     '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
 ]);
+let isVerifiedAdmin = false;
+let servicePreviewUrl = '';
 
 function normalizeStatus(status) {
     return String(status || 'pending').trim().toLowerCase() || 'pending';
@@ -27,6 +41,111 @@ function showMessage(element, text, isError) {
     element.setAttribute('role', isError ? 'alert' : 'status');
 }
 
+function setupServiceForm() {
+    if (!serviceForm || !serviceImageInput || !serviceImagePreview || !serviceFormMessage) return;
+
+    serviceImageInput.addEventListener('change', () => {
+        if (servicePreviewUrl) URL.revokeObjectURL(servicePreviewUrl);
+        servicePreviewUrl = '';
+
+        const image = serviceImageInput.files[0];
+        if (!image) {
+            serviceImagePreview.removeAttribute('src');
+            serviceImagePreview.hidden = true;
+            return;
+        }
+
+        servicePreviewUrl = URL.createObjectURL(image);
+        serviceImagePreview.src = servicePreviewUrl;
+        serviceImagePreview.hidden = false;
+    });
+
+    serviceForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!isVerifiedAdmin) {
+            showMessage(serviceFormMessage, 'Administrator access is required to add a service.', true);
+            return;
+        }
+
+        const submitButton = serviceForm.querySelector('[type="submit"]');
+        submitButton.disabled = true;
+        showMessage(serviceFormMessage, 'Uploading image and saving service...', false);
+
+        let uploadedImageRef = null;
+        let imageUploaded = false;
+        try {
+            const formData = new FormData(serviceForm);
+            const name = String(formData.get('name') || '').trim();
+            const description = String(formData.get('description') || '').trim();
+            const price = Number(formData.get('price'));
+            const image = serviceImageInput.files[0];
+            const allowedTypes = new Map([
+                ['image/jpeg', 'jpg'],
+                ['image/png', 'png'],
+                ['image/webp', 'webp']
+            ]);
+
+            if (!name || name.length > 80) {
+                throw new Error('Enter a service name of 1 to 80 characters.');
+            }
+            if (!description || description.length > 500) {
+                throw new Error('Enter a description of 1 to 500 characters.');
+            }
+            if (!Number.isFinite(price) || price <= 0 || price > 1000000) {
+                throw new Error('Enter a price greater than R0 and no more than R1,000,000.');
+            }
+            if (!image || !allowedTypes.has(image.type)) {
+                throw new Error('Choose a JPEG, PNG, or WebP image.');
+            }
+            if (image.size > 5 * 1024 * 1024) {
+                throw new Error('The image must be 5 MB or smaller.');
+            }
+
+            const existingServices = await getDocs(collection(db, 'services'));
+            if (existingServices.docs.some((service) =>
+                String(service.data().name || '').trim().toLowerCase() === name.toLowerCase()
+            )) {
+                throw new Error('A service with that name already exists.');
+            }
+
+            const serviceRef = doc(collection(db, 'services'));
+            const imagePath = `service-images/${serviceRef.id}.${allowedTypes.get(image.type)}`;
+            uploadedImageRef = ref(storage, imagePath);
+            await uploadBytes(uploadedImageRef, image, { contentType: image.type });
+            imageUploaded = true;
+            const imageUrl = await getDownloadURL(uploadedImageRef);
+
+            await setDoc(serviceRef, {
+                name,
+                description,
+                price,
+                imageUrl,
+                imagePath,
+                createdAt: serverTimestamp()
+            });
+
+            serviceForm.reset();
+            if (servicePreviewUrl) URL.revokeObjectURL(servicePreviewUrl);
+            servicePreviewUrl = '';
+            serviceImagePreview.removeAttribute('src');
+            serviceImagePreview.hidden = true;
+            showMessage(serviceFormMessage, 'Service added. It is now available for booking and on the Products & Services page.', false);
+        } catch (error) {
+            if (imageUploaded && uploadedImageRef) {
+                try {
+                    await deleteObject(uploadedImageRef);
+                } catch (cleanupError) {
+                    console.error('Could not remove the uploaded image after the service save failed.', cleanupError);
+                }
+            }
+            console.error('Could not add the bookable service.', error);
+            showMessage(serviceFormMessage, error.message || 'Could not add the service. Please try again.', true);
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
+}
+
 function addCell(row, text) {
     const cell = row.insertCell();
     cell.textContent = text || '—';
@@ -35,16 +154,17 @@ function addCell(row, text) {
 
 function renderBookings(bookings) {
     bookingsBody.replaceChildren();
-    if (bookings.length === 0) {
+    const activeBookings = bookings.filter((booking) => normalizeStatus(booking.status) !== 'cancelled');
+    if (activeBookings.length === 0) {
         const row = bookingsBody.insertRow();
         const cell = row.insertCell();
         cell.colSpan = 5;
-        cell.textContent = 'No bookings have been submitted.';
+        cell.textContent = 'No active bookings.';
         return;
     }
 
-    bookings.sort((a, b) => `${a.preferredDate || ''} ${a.preferredTime || ''}`.localeCompare(`${b.preferredDate || ''} ${b.preferredTime || ''}`));
-    bookings.forEach((booking) => {
+    activeBookings.sort((a, b) => `${a.preferredDate || ''} ${a.preferredTime || ''}`.localeCompare(`${b.preferredDate || ''} ${b.preferredTime || ''}`));
+    activeBookings.forEach((booking) => {
         const normalizedStatus = normalizeStatus(booking.status);
         const row = bookingsBody.insertRow();
         addCell(row, `${booking.preferredDate || 'Date pending'} ${booking.preferredTime || ''}`.trim());
@@ -52,11 +172,6 @@ function renderBookings(bookings) {
         addCell(row, booking.service);
         addCell(row, normalizedStatus === 'pending' ? 'Pending' : normalizedStatus === 'confirmed' ? 'Confirmed' : normalizedStatus === 'cancelled' ? 'Cancelled' : 'Pending');
         const actionCell = row.insertCell();
-
-        if (normalizedStatus === 'cancelled') {
-            actionCell.textContent = 'Cancelled';
-            return;
-        }
 
         if (normalizedStatus === 'confirmed') {
             const cancelButton = document.createElement('button');
@@ -139,6 +254,8 @@ async function loadDashboard(user) {
     await user.reload();
     const token = await user.getIdTokenResult(true);
     if (!ADMIN_EMAILS.has(user.email?.trim().toLowerCase()) || token.claims.email_verified !== true) {
+        isVerifiedAdmin = false;
+        servicePanel.hidden = true;
         showMessage(
             message,
             `This dashboard requires a verified allowlisted email. Signed in as "${user.email || 'unknown'}".`,
@@ -148,6 +265,8 @@ async function loadDashboard(user) {
         return;
     }
 
+    isVerifiedAdmin = true;
+    servicePanel.hidden = false;
     showMessage(message, 'Administrator access verified.', false);
     const initialBookings = (await getDocs(collection(db, 'bookings'))).docs.map((snapshot) => ({
         ...snapshot.data(),
@@ -172,20 +291,12 @@ async function loadDashboard(user) {
     renderBookings(bookings);
 }
 
+setupServiceForm();
+
 document.addEventListener('click', async (event) => {
     const button = event.target.closest('[data-action]');
     if (!button || button.disabled) return;
     button.disabled = true;
-
-    const row = button.closest('tr');
-    const statusCell = row?.querySelectorAll('td')[3];
-    const actionCell = row?.querySelectorAll('td')[4];
-    const actionLabel = button.dataset.action === 'confirm-booking' ? 'Confirmed' : 'Cancelled';
-
-    if (statusCell) statusCell.textContent = actionLabel;
-    if (actionCell) {
-        actionCell.textContent = actionLabel;
-    }
 
     try {
         const bookingRef = doc(db, 'bookings', button.dataset.id);

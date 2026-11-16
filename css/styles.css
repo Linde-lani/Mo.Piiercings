@@ -302,6 +302,27 @@ button:hover {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
+.admin-service-form {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+#service-catalog-panel {
+    max-width: 850px;
+    margin: 1.5em auto;
+    text-align: center;
+}
+
+.admin-service-preview {
+    display: block;
+    width: min(100%, 300px);
+    max-height: 300px;
+    margin-top: 1em;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
 .admin-table-wrap {
     overflow-x: auto;
 }

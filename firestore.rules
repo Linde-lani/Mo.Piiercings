@@ -112,5 +112,27 @@ service cloud.firestore {
         && request.resource.data.message is string;
       allow update, delete: if false;
     }
+
+    match /services/{serviceId} {
+      allow read: if signedIn();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'name', 'description', 'price', 'imageUrl', 'imagePath', 'createdAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 500
+        && request.resource.data.price is number
+        && request.resource.data.price > 0
+        && request.resource.data.price <= 1000000
+        && request.resource.data.imageUrl is string
+        && request.resource.data.imageUrl.size() <= 2048
+        && request.resource.data.imagePath is string
+        && request.resource.data.imagePath.matches('service-images/[a-zA-Z0-9_-]+[.](jpg|png|webp)')
+        && request.resource.data.createdAt is timestamp;
+      allow update, delete: if false;
+    }
   }
 }
